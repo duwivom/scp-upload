@@ -12,8 +12,18 @@ else
     ssh -i key -o "StrictHostKeyChecking no" -p $INPUT_PORT "$INPUT_USERNAME"@"$INPUT_HOST" "mkdir -p ${remote_dir}/"
 fi
 
+# run command before scp
+if [ "$before" != ""]; then
+    ssh -i key -o "StrictHostKeyChecking no" -p $INPUT_PORT "$INPUT_USERNAME"@"$INPUT_HOST" "${before}"
+fi
+
 # Copy the file
 scp -i key -o "StrictHostKeyChecking no" -P $INPUT_PORT "$INPUT_SOURCE" "$INPUT_USERNAME"@"$INPUT_HOST":$remote_dir
+
+# run command after scp
+if [ "$after" != ""]; then
+    ssh -i key -o "StrictHostKeyChecking no" -p $INPUT_PORT "$INPUT_USERNAME"@"$INPUT_HOST" "${after}"
+fi
 
 # Clean
 cat /dev/null > ~/.bash_history
